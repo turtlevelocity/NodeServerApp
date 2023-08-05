@@ -1,31 +1,27 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require('../models/User');
 
-const verifyToken = async (req, res, next) => {
-  const headers = req.headers;
-  console.log(headers);
-  // if(headers && 
-  //   headers.authorization && 
-  //   headers.authorization.split(" ")[0]=="Bearer"
-  //   ) {
+const verifySession = async (req, res, next) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).send("please login");
+  }
 
-  //     const token = headers.authorization.split(" ")[1];
+  console.log(req.session);
+  const userId = req.session.user._id;
 
-  //     jwt.verify(token, "secretKeyfromconfig", (err, decoded) => {
-  //       if (err) {
-  //         return res.status(401).send({
-  //           message: "Unauthorized!",
-  //         });
-  //       }
-  //       const userId = decoded.id;
+  try {
+    const user = await UserModel.findById(userId).exec();
 
-  //     });
-  // }
-  // else {
-  //   return res.status(401).send("token is invalid");
-  // }
+    if(!user) {
+      return res.status(400).send("user not found for this session id");
+    }
+  
+    next();
+  } catch(err) {
+    return res.status(500).send("Internal server error");
+  }
+  
 
-  next();
 }
 
-module.exports = {verifyToken};
+module.exports = {verifySession};

@@ -2,8 +2,8 @@ hello there
 
 // APIs we will need for our application
 
-1. GET /user/:id -> returns user detail
-2. GET /user/:id/friends -> return user friend list
+1. GET /user/:id -> returns user detail -- implemented
+2. **GET /user/friends -> return user friend list -- need to implement
 3. POST /user/post -> save your message/post in db
 4. GET /user/timeline -> return all the friends posts
 5. GET /post/ -> return all the posts that you have posted in app

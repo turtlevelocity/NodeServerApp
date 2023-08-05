@@ -45,47 +45,26 @@ const login = async(req, res) => {
       return res.status(401).send("Unauthorized access. Password is incorrect");
     }
 
-    const jwtToken = jwt.sign({id: user._id}, process.env.JWT_SECRET);
+    req.session.user = {_id: user._id, username: user.username};
 
-    return res.send({
-      "user": email,
-      "authToken": jwtToken
-    });
+    console.log('show req sessin');
+    console.log(req.session);
+
+    return res.send("User login successful");
 
   }catch(err) {
     console.log(err);
     return res.status(500).send(err);
   }
-  
-
-  // try{
-  //   const user = await UserModel.findOne({email}).exec();
-  //   if(!user) {
-  //     console.log(`user not found: ${user}`);
-  //     return res.status(404).send({message: "user not found"});
-  //   }
-
-  //   console.log(user);
-
-  //   const isValidUser = bcrypt.compareSync(password, user.password);
-  //   if (!isValidUser) {
-  //     return res.status(401).send("Invalid password");
-  //   }
-
-  //   const token = jwt.sign({id: user._id}, "secretKeyfromconfig");
-
-  //   return res.send({
-  //     user: {
-  //       id: user._id,
-  //       username: user.username,
-  //       email: user.email
-  //     },
-  //     accesstoken: token
-  //   });
-  // } catch(err){
-  //   console.log(err);
-  //   res.status(500).send(err);
-  // }
 }
 
-module.exports = {register, login};
+const logout = async(req, res) => {
+  req.session.destroy((err) => {
+    if(err){
+      return res.status(500).send("Unable to logout");
+    }
+    res.send("logout successful");
+  })
+}
+
+module.exports = {register, login, logout};
