@@ -50,7 +50,7 @@ const login = async(req, res) => {
     console.log('show req sessin');
     console.log(req.session);
 
-    return res.send("User login successful");
+    return res.send(user.username);
 
   }catch(err) {
     console.log(err);

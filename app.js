@@ -2,6 +2,7 @@ const express = require('express');
 const userRoute = require('./route/user');
 const authRoute = require('./route/auth');
 const friendRoute = require('./route/friend');
+const postRoute = require('./route/post');
 
 const mongoose = require("mongoose");
 //session
@@ -30,6 +31,8 @@ app.use('/user', userRoute);
 app.use('/auth', authRoute);
 
 app.use('/friend', friendRoute);
+
+app.use('/post', postRoute);
 
 
 // GET, POST, PUT, DELETE
