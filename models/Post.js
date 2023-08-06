@@ -5,10 +5,8 @@ const Schema = mongoose.Schema;
 const PostSchema = new Schema({
   userId: mongoose.Schema.Types.ObjectId,
   post: String,
-  likes: [{userName: String}],
-  dislikes: [{
-    userName: String
-  }],
+  likes: [String],
+  dislikes: [String],
   timestamp: { type : Date, default: Date.now } 
 });
 
