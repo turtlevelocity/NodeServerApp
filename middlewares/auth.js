@@ -3,6 +3,7 @@ const UserModel = require('../models/User');
 
 const verifySession = async (req, res, next) => {
 
+  console.log(req.session.user);
   if (!req.session || !req.session.user) {
     return res.status(401).send("please login");
   }

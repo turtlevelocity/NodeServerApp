@@ -7,6 +7,17 @@ const register = async (req, res) => {
 
   const {username, email, password, age} = req.body;
 
+  try {
+    const user = await UserModel.findOne({email}).exec();
+    if (user) {
+      return res.status(409).send("User already exists");
+    }
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+
   const hashedPassword = bcrypt.hashSync(password, saltRounds);
 
   const user = new UserModel({
@@ -50,7 +61,7 @@ const login = async(req, res) => {
     console.log('show req sessin');
     console.log(req.session);
 
-    return res.send(user.username);
+    return res.send({username: user.username, email: user.email, _id: user._id});
 
   }catch(err) {
     console.log(err);
@@ -59,6 +70,7 @@ const login = async(req, res) => {
 }
 
 const logout = async(req, res) => {
+  console.log(req.session);
   req.session.destroy((err) => {
     if(err){
       return res.status(500).send("Unable to logout");

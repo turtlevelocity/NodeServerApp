@@ -4,7 +4,7 @@ const FriendsModel = require('../models/Friends');
 
 const allUserProfile = async (req, res) => {
   console.log("in all profile");
-  const allUsers = await UserModel.find().exec();
+  const allUsers = await UserModel.find().select('username email age').exec();
   res.send(allUsers);
 };
 
@@ -39,7 +39,18 @@ const userTimeline = async(req, res) => {
       {userId: {$in: userFriendModel.friendList}
     });
 
-    return res.send(friendsPosts);
+    const uniqueUserIds = [...new Set(friendsPosts.map(post => post.userId.toString()))];
+
+    const users = await UserModel.find({
+      _id: {$in: uniqueUserIds}
+    }).select('username email');
+
+    const mergedData = friendsPosts.map(post => {
+      const user = users.find(user => user._id.toString() === post.userId.toString());
+      return {post, user};
+    });
+
+    return res.send(mergedData);
   } catch(err){
     return res.status(500).send(err);
   }

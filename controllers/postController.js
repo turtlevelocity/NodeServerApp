@@ -8,22 +8,23 @@ const likePost = async (req, res) => {
   try{
     const user = await UserModel.findOne({_id: userId}).exec();
     const post = await PostModel.findById(postId).exec();
-    console.log(post);
+
     if (!post) {
       return res.status(400).send("Post not found");
     }
 
-    // const isPresent = post.likes.filter(x => x.userName===user.username).length;
     const isPresent = post.likes.includes(user.username);
     if (isPresent)
     {
-      post.likes.pop(user.username);
+      return res.send("User has already liked the post");
     }
-    else {
-      post.likes.push(user.username);
-    }
-    
 
+    if(post.dislikes.includes(user.username)) {
+      post.dislikes.pop(user.username);
+    }
+
+    post.likes.push(user.username);
+    
     await post.save();
     return res.send("Like request successfully submitted");
 
@@ -41,19 +42,27 @@ const dislikePost = async (req, res) => {
 
   try{
     const user = await UserModel.findOne({_id: userId}).exec();
-    console.log(user);
+
     const post = await PostModel.findById(postId).exec();
-    console.log(post);
+
     if (!post) {
       return res.status(400).send("Post not found");
     }
 
-    const isPresent = post.dislikes.filter(x => x.userName===user.username).length;
+    const isPresent = post.dislikes.includes(user.username);
+
     if (isPresent>0)
     {
-      return res.status(400).send('User already liked post');
+      return res.send('User already disliked the post');
     }
-    post.dislikes.push({userName:user.username});
+
+    if(post.likes.includes(user.username)) {
+      post.likes.pop(user.username);
+    }
+
+    post.dislikes.push(user.username);
+
+
     await post.save();
     return res.send("Successfully disliked post");
 

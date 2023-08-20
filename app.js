@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const userRoute = require('./route/user');
 const authRoute = require('./route/auth');
 const friendRoute = require('./route/friend');
@@ -17,14 +18,25 @@ app.use(express.json());
 
 app.use(session({
   secret: process.env.SESSION_SECRET_KEY,
-  saveUninitialized: false, // don't create session until something stored
+  saveUninitialized: true, // don't create session until something stored
   resave: false, //don't save session if unmodified
+  cookie: {
+    secure: false, // Set to true if using HTTPS in production
+    maxAge: 3600000, // Session expiration time in milliseconds
+  },
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
     touchAfter: 24 * 3600,// time period in seconds
     dbName: 'session'
   })
 }));
+
+// Use the cors middleware
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true
+}));
+
 
 app.use('/user', userRoute);
 

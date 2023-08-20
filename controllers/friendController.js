@@ -14,7 +14,7 @@ const acceptFriendRequest = async (req, res) => {
   }
 
   try {
-    await addUsersInFriendLists(userId, friendUserId);
+    await addUsersInFriendLists(userId, friendData._id.toString());
 
     await addUsersInFriendLists(friendUserId, userId);
 
@@ -30,6 +30,8 @@ const acceptFriendRequest = async (req, res) => {
 const sendFriendRequest = async (req, res) => {
   const {fromUserId, toUserId} = req.body;
 
+  console.log("from user id: ", fromUserId);
+  console.log("to user id:", toUserId);
 
   const friendRequestModel = new FriendRequestModel({
     fromUserId: fromUserId,
@@ -83,7 +85,7 @@ const fetchFriends = async(req, res) => {
     const users = [];
 
     userFriends.forEach(user => {
-      users.push({username: user.username, email: user.email});
+      users.push({username: user.username, email: user.email, _id:user._id, age: user.age});
     })
 
     res.send(users);
@@ -97,6 +99,8 @@ const addUsersInFriendLists = async (userId, friendUserId) => {
   const userDocument = await FriendsModel.findOne({userId: userId});
 
   if (userDocument) {
+
+    console.log("document: ", userDocument);
 
     userDocument.friendList.push(friendUserId);
     const updatedDocument = await documentToUpdate.save();
